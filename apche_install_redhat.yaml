@@ -1,0 +1,32 @@
+---
+- name: Install Apache web server
+  hosts: ansible_client
+  remote_user: root
+  become: true
+  tasks:
+  - name: Install Apache
+    yum:
+      name: httpd
+      state: latest
+
+  - name: Set index.html content
+    copy:
+      content: "<html><body><h1>Welcome to my website!</h1></body></html>"
+      dest: /var/www/html/index.html
+
+  - name: Change Apache port
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^Listen '
+      line: 'Listen 8080'
+
+  - name: start apache
+    service:
+      name: httpd
+      state: started
+      enabled: true
+
+  - name: restart apache
+    service:
+      name: httpd
+      state: restarted
